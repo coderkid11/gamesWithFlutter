@@ -38,8 +38,10 @@ class Bat extends PositionComponent
   @override
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
-    position.x = (position.x + event.localDelta.x)
-        .clamp(width / 2, game.width - width / 2);
+    if (game.playState == PlayState.playing) {
+      position.x = (position.x + event.localDelta.x)
+          .clamp(width / 2, game.width - width / 2);
+    }
   }
 
   void moveBy(double dx) {
