@@ -26,6 +26,7 @@ class Brick extends RectangleComponent
     super.onCollisionStart(intersectionPoints, other);
     removeFromParent();
     game.score.value += 100;
+    bricksHit++;
 
     if (game.world.children.query<Brick>().length == 1) {
       game.playState = PlayState.levelUp;

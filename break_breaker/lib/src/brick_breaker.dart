@@ -27,6 +27,7 @@ class BrickBreaker extends FlameGame
   double get width => size.x;
   double get height => size.y;
   bool isLifeLost = false;
+  int level = 1;
 
   late PlayState _playState;
   PlayState get playState => _playState;
@@ -91,9 +92,10 @@ class BrickBreaker extends FlameGame
     playState = PlayState.playing;
     score.value = 0;
     lives.value = 3;
+    bricksHit = 0;
+    level = 1;
 
     world.add(Ball(
-        difficultyModifier: difficultyModifier,
         radius: ballRadius,
         position: size / 2,
         velocity: Vector2((rand.nextDouble() - 0.5) * width, height * 0.3)
@@ -125,9 +127,9 @@ class BrickBreaker extends FlameGame
     world.removeAll(world.children.query<Bat>());
 
     playState = PlayState.playing;
+    bricksHit = 0;
 
     world.add(Ball(
-        difficultyModifier: difficultyModifier,
         radius: ballRadius,
         position: size / 2,
         velocity: Vector2((rand.nextDouble() - 0.5) * width, height * 0.3)
@@ -149,11 +151,11 @@ class BrickBreaker extends FlameGame
 
     playState = PlayState.playing;
 
-    difficultyModifier *= 1.05;
-    batWidth *= 0.95;
+    level += 1;
+    batWidth *= 0.9;
+    bricksHit = 0;
 
     world.add(Ball(
-        difficultyModifier: difficultyModifier,
         radius: ballRadius,
         position: size / 2,
         velocity: Vector2((rand.nextDouble() - 0.5) * width, height * 0.3)
