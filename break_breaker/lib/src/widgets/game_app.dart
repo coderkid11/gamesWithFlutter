@@ -21,11 +21,13 @@ class GameApp extends StatefulWidget {
 
 class _GameAppState extends State<GameApp> {
   late final BrickBreaker game;
+  late final ValueNotifier<int> score;
 
   @override
   void initState() {
     super.initState();
     game = BrickBreaker();
+    score = game.score;
   }
 
   @override
@@ -78,34 +80,41 @@ class _GameAppState extends State<GameApp> {
                       child: ValueListenableBuilder<int>(
                         valueListenable: lives,
                         builder: (context, value, child) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Visibility(
-                                visible: value > 0,
-                                child: Icon(
-                                  LineAwesomeIcons.heart_1,
-                                  size: 20,
-                                  color: const Color(0xff184e77).withOpacity(0.5),
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Visibility(
+                                  visible: value > 0,
+                                  child: Icon(
+                                    LineAwesomeIcons.heart_1,
+                                    size: 20,
+                                    color: const Color(0xff184e77).withOpacity(0.5),
+                                  ),
                                 ),
-                              ),
-                              Visibility(
-                                visible: value > 1,
-                                child: Icon(
-                                  LineAwesomeIcons.heart_1,
-                                  size: 20,
-                                  color: const Color(0xff184e77).withOpacity(0.5),
+                                Visibility(
+                                  visible: value > 1,
+                                  child: Icon(
+                                    LineAwesomeIcons.heart_1,
+                                    size: 20,
+                                    color: const Color(0xff184e77).withOpacity(0.5),
+                                  ),
                                 ),
-                              ),
-                              Visibility(
-                                visible: value > 2,
-                                child: Icon(
-                                  LineAwesomeIcons.heart_1,
-                                  size: 20,
-                                  color: const Color(0xff184e77).withOpacity(0.5),
+                                Visibility(
+                                  visible: value > 2,
+                                  child: Icon(
+                                    LineAwesomeIcons.heart_1,
+                                    size: 20,
+                                    color: const Color(0xff184e77).withOpacity(0.5),
+                                  ),
                                 ),
-                              ),
-                            ],
+                                Visibility(
+                                  visible: value == 0,
+                                  child: SizedBox(height: 20)
+                                )
+                              ],
+                            ),
                           );
                         },
                       ),
@@ -124,9 +133,12 @@ class _GameAppState extends State<GameApp> {
                                     subtitle: 'User arrow keys or swipe',
                                   ),
                               PlayState.gameOver.name: (context, game) =>
-                                  const OverlayScreen(
+                                  OverlayScreen(
                                     title: 'G A M E  O V E R',
                                     subtitle: 'Tap to Play Again',
+                                    title2: 'Highscore: ${score.value}',
+
+                                    // TODO: Implement Highscore System
                                   ),
                               PlayState.won.name: (context, game) =>
                                   const OverlayScreen(
@@ -139,6 +151,12 @@ class _GameAppState extends State<GameApp> {
                                     subtitle:
                                         'You have ${lives.value} lives left',
                                     subtitle2: 'Tap to Continue',
+                                  ),
+                              PlayState.levelUp.name: (context, game) =>
+                                  const OverlayScreen(
+                                    title: 'L E V E L  U P',
+                                    subtitle: 'Tap to Continue',
+                                    subtitle2: 'Score +1000',
                                   ),
                             },
                           ),

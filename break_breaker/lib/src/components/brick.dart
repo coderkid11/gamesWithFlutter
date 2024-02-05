@@ -25,10 +25,10 @@ class Brick extends RectangleComponent
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
     removeFromParent();
-    game.score.value++;
+    game.score.value += 100;
 
     if (game.world.children.query<Brick>().length == 1) {
-      game.playState = PlayState.won;
+      game.playState = PlayState.levelUp;
       game.world.removeAll(game.world.children.query<Ball>());
       game.world.removeAll(game.world.children.query<Bat>());
     }

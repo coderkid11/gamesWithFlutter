@@ -7,11 +7,13 @@ class OverlayScreen extends StatelessWidget {
   const OverlayScreen({
     super.key,
     required this.title,
+    this.title2 = '',
     required this.subtitle,
     this.subtitle2 = '',
   });
 
   final String title;
+  final String title2;
   final String subtitle;
   final String subtitle2;
 
@@ -26,23 +28,30 @@ class OverlayScreen extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.headlineLarge,
           ).animate().slideY(duration: 750.ms, begin: -3, end: 0),
+          if (title2.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(
+              title2,
+              style: Theme.of(context).textTheme.headlineLarge,
+            ).animate().slideY(duration: 750.ms, begin: -3, end: 0),
+          ],
           const SizedBox(height: 16),
           Text(
             subtitle,
             style: Theme.of(context).textTheme.titleLarge,
           )
-                .animate(onPlay: (controller) => controller.repeat())
-                .fadeIn(duration: 1.seconds)
-                .then()
-                .fadeOut(duration: 1.seconds),
+              .animate(onPlay: (controller) => controller.repeat())
+              .fadeIn(duration: 1.seconds)
+              .then()
+              .fadeOut(duration: 1.seconds),
           Text(
             subtitle2,
             style: Theme.of(context).textTheme.titleLarge,
           )
-                .animate(onPlay: (controller) => controller.repeat())
-                .fadeIn(duration: 1.seconds)
-                .then()
-                .fadeOut(duration: 1.seconds),
+              .animate(onPlay: (controller) => controller.repeat())
+              .fadeIn(duration: 1.seconds)
+              .then()
+              .fadeOut(duration: 1.seconds),
         ],
       ),
     );

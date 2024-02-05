@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'components/components.dart';
 import 'config.dart';
 
-enum PlayState { welcome, playing, lifeLost, gameOver, won }
+enum PlayState { welcome, playing, lifeLost, gameOver, levelUp, won }
 
 class BrickBreaker extends FlameGame
     with HasCollisionDetection, KeyboardEvents, TapDetector {
@@ -27,7 +27,6 @@ class BrickBreaker extends FlameGame
   double get width => size.x;
   double get height => size.y;
   bool isLifeLost = false;
-  
 
   late PlayState _playState;
   PlayState get playState => _playState;
@@ -46,13 +45,28 @@ class BrickBreaker extends FlameGame
         isLifeLost = true;
         overlays.add(playState.name);
       case PlayState.gameOver:
+        overlays.add(playState.name);
       case PlayState.won:
+        world.removeAll(world.children.query<Ball>());
+        world.removeAll(world.children.query<Bat>());
+        world.removeAll(world.children.query<Brick>());
+        overlays.remove(PlayState.welcome.name);
+        overlays.remove(PlayState.gameOver.name);
+        overlays.remove(PlayState.lifeLost.name);
         overlays.add(playState.name);
       case PlayState.playing:
         overlays.remove(PlayState.welcome.name);
         overlays.remove(PlayState.gameOver.name);
         overlays.remove(PlayState.won.name);
         overlays.remove(PlayState.lifeLost.name);
+        overlays.remove(PlayState.levelUp.name);
+      case PlayState.levelUp:
+        overlays.remove(PlayState.welcome.name);
+        overlays.remove(PlayState.gameOver.name);
+        overlays.remove(PlayState.won.name);
+        overlays.remove(PlayState.lifeLost.name);
+        score.value += 1000;
+        overlays.add(playState.name);
     }
   }
 
@@ -76,6 +90,7 @@ class BrickBreaker extends FlameGame
 
     playState = PlayState.playing;
     score.value = 0;
+    lives.value = 3;
 
     world.add(Ball(
         difficultyModifier: difficultyModifier,
@@ -87,7 +102,7 @@ class BrickBreaker extends FlameGame
 
     world.add(Bat(
         size: Vector2(batWidth, batHeight),
-        cornerRadius: const Radius.circular(ballRadius / 2),
+        cornerRadius: Radius.circular(ballRadius / 2),
         position: Vector2(width / 2, height * 0.95)));
 
     world.addAll([
@@ -103,9 +118,9 @@ class BrickBreaker extends FlameGame
     ]);
   }
 
-  void continueGame() {
+  void continueGameLifeLost() {
     if (playState == PlayState.playing) return;
-    
+
     world.removeAll(world.children.query<Ball>());
     world.removeAll(world.children.query<Bat>());
 
@@ -121,16 +136,56 @@ class BrickBreaker extends FlameGame
 
     world.add(Bat(
         size: Vector2(batWidth, batHeight),
-        cornerRadius: const Radius.circular(ballRadius / 2),
+        cornerRadius: Radius.circular(ballRadius / 2),
         position: Vector2(width / 2, height * 0.95)));
+  }
+
+  void continueGameLevelUp() {
+    if (playState == PlayState.playing) return;
+
+    world.removeAll(world.children.query<Ball>());
+    world.removeAll(world.children.query<Bat>());
+    world.removeAll(world.children.query<Brick>());
+
+    playState = PlayState.playing;
+
+    difficultyModifier *= 1.05;
+    batWidth *= 0.95;
+
+    world.add(Ball(
+        difficultyModifier: difficultyModifier,
+        radius: ballRadius,
+        position: size / 2,
+        velocity: Vector2((rand.nextDouble() - 0.5) * width, height * 0.3)
+            .normalized()
+          ..scale(height / 4)));
+
+    world.add(Bat(
+        size: Vector2(batWidth, batHeight),
+        cornerRadius: Radius.circular(ballRadius / 2),
+        position: Vector2(width / 2, height * 0.95)));
+
+    world.addAll([
+      for (var i = 0; i < brickColors.length; i++)
+        for (var j = 1; j <= 5; j++)
+          Brick(
+            Vector2(
+              (i + 0.5) * brickWidth + (i + 1) * brickGutter,
+              (j + 2.0) * brickHeight + j * brickGutter,
+            ),
+            brickColors[i],
+          ),
+    ]);
   }
 
   @override
   void onTap() {
     super.onTap();
-    
+
     if (playState == PlayState.lifeLost) {
-      continueGame();
+      continueGameLifeLost();
+    } else if (playState == PlayState.levelUp) {
+      continueGameLevelUp();
     } else {
       startGame();
     }
@@ -147,7 +202,13 @@ class BrickBreaker extends FlameGame
         world.children.query<Bat>().first.moveBy(batStep);
       case LogicalKeyboardKey.space:
       case LogicalKeyboardKey.enter:
-        startGame();
+        if (playState == PlayState.lifeLost) {
+          continueGameLifeLost();
+        } else if (playState == PlayState.levelUp) {
+          continueGameLevelUp();
+        } else {
+          startGame();
+        }
     }
     return KeyEventResult.handled;
   }

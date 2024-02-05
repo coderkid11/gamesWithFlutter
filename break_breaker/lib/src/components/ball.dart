@@ -49,12 +49,12 @@ class Ball extends CircleComponent
         add(RemoveEffect(
             delay: 0.35,
             onComplete: () {
-              if (lives.value > 0) {
+              if (lives.value > 1) {
                 lives.value--;
                 game.playState = PlayState.lifeLost;
               } else {
+                lives.value--;
                 game.playState = PlayState.gameOver;
-                lives.value = 3;
               }
             }));
       }
@@ -73,6 +73,8 @@ class Ball extends CircleComponent
         velocity.x = -velocity.x;
       }
       velocity.setFrom(velocity * difficultyModifier);
+    } else {
+      velocity.y = -velocity.y;
     }
   }
 }
