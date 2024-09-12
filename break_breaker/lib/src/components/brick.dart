@@ -28,7 +28,7 @@ class Brick extends RectangleComponent
     game.score.value += 100;
     bricksHit++;
 
-    if (game.world.children.query<Brick>().length == 1) {
+    if (game.world.children.query<Brick>().length <= 1) {
       game.playState = PlayState.levelUp;
       game.world.removeAll(game.world.children.query<Ball>());
       game.world.removeAll(game.world.children.query<Bat>());
