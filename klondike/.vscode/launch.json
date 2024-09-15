@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "klondike (Dart Web)",
+            "program": "web",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "klondike (Dart Web)",
+            "program": "web",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}
